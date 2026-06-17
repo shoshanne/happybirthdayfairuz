@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Happy Birthday 🎂</title>
+
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Patrick+Hand&family=Caveat:wght@500;600;700&display=swap" rel="stylesheet">
+
+<!-- Strudel — live-coded audio engine. AGPL-3.0, see https://strudel.cc -->
+<script src="https://unpkg.com/@strudel/web@1.1.0"></script>
+
+<style>
+  :root{
+    --cream: #F2E2C4;
+    --cream-deep: #E8D2A0;
+    --paper: #FBF1DC;
+    --paper-line: #C9A876;
+    --maroon: #6E1B22;
+    --maroon-deep: #470F14;
+    --maroon-bright: #9C2A2E;
+    --navy: #28365C;
+    --lime: #CBDB3E;
+    --lime-deep: #A8B82C;
+    --ink: #2E2118;
+    --ink-soft: #51392A;
+    --shadow: rgba(30,18,10,0.4);
+  }
+
+  *{ box-sizing: border-box; }
+
+  html, body{
+    margin:0; padding:0;
+    width:100%; min-height:100vh;
+    background: var(--cream);
+    color: var(--ink);
+    font-family:'Patrick Hand', cursive;
+    overflow-x:hidden;
+  }
+
+  /* ---------- Bold scrapbook backdrop: strong fiber texture + diagonal weave ---------- */
+  body{
+    position:relative;
+    background:
+      repeating-linear-gradient(135deg, rgba(110,27,34,0.05) 0 2px, transparent 2px 26px),
+      repeating-linear-gradient(45deg, rgba(40,54,92,0.04) 0 2px, transparent 2px 26px),
+      var(--cream);
+  }
+  body::before{
+    content:"";
+    position:fixed; inset:0;
+    pointer-events:none;
+    z-index:1;
+    opacity:0.65;
+    mix-blend-mode:multiply;
+    background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='300' height='300'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.018' numOctaves='5' seed='11' stitchTiles='stitch'/><feColorMatrix type='matrix' values='0 0 0 0 0.15  0 0 0 0 0.1  0 0 0 0 0.05  0 0 0 0.6 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
+    background-size: 300px 300px;
+  }
+
+  /* big scattered stars, like the reference mood board */
+  .deco-star{
+    position:fixed;
+    pointer-events:none;
+    z-index:1;
+  }
+
+  .scene{
+    min-height:100vh; width:100%;
+    display:none; align-items:center; justify-content:center;
+    padding: 36px 16px 64px;
+    position:relative; z-index:3;
+  }
+  .scene.active{ display:flex; }
+
+  /* ---------- Reusable scrapbook bits ---------- */
+  .tape{
+    position:absolute;
+    width:100px; height:36px;
+    opacity:0.95;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.25), inset 0 0 12px rgba(255,255,255,0.2);
+  }
+  .tape.washi-lime{
+    background:
+      repeating-linear-gradient(135deg, rgba(0,0,0,0.08) 0 4px, transparent 4px 10px),
+      linear-gradient(180deg, var(--lime), var(--lime-deep));
+  }
+  .tape.washi-maroon{
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.16) 0 4px, transparent 4px 10px),
+      linear-gradient(180deg, var(--maroon-bright), var(--maroon));
+  }
+  .tape.washi-navy{
+    background:
+      repeating-linear-gradient(135deg, rgba(255,255,255,0.14) 0 4px, transparent 4px 10px),
+      linear-gradient(180deg, #3A4D7D, var(--navy));
+  }
+  .pin{
+    position:absolute;
+    width:18px; height:18px;
+    border-radius:50%;
+    background: radial-gradient(circle at 32% 30%, #fff 0%, var(--maroon-bright) 38%, var(--maroon-deep) 100%);
+    box-shadow: 0 4px 5px rgba(0,0,0,0.4);
+    z-index:6;
+  }
+
+  /* ---------- SCENE 1 ---------- */
+  .card1{
+    background: var(--paper);
+    background-image: repeating-linear-gradient(180deg, transparent 0 28px, var(--paper-line) 28px 29px);
+    border-radius: 2px;
+    padding: 46px 38px 42px;
+    max-width: 540px; width:100%;
+    text-align:center;
+    position:relative;
+    box-shadow: 0 24px 50px var(--shadow), 0 0 0 6px var(--paper), 0 0 0 7px var(--maroon);
+    transform: rotate(-0.6deg);
+    opacity:0;
+    animation: cardIn 0.9s cubic-bezier(.2,.8,.2,1) forwards;
+  }
+  @keyframes cardIn{ to{ opacity:1; } from{ opacity:0; } }
+
+  .card1 .tape.tl{ top:-18px; left:-28px; transform: rotate(-40deg); }
+  .card1 .tape.tr{ top:-18px; right:-28px; transform: rotate(40deg); }
+  .card1 .pin.p1{ top:10px; left: 50%; margin-left:-9px; }
+
+  .eyebrow{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--navy);
+    letter-spacing: 1px;
+    font-size: 17px;
+    margin: 8px 0 2px;
+  }
+
+  .headline{
+    font-family:'Permanent Marker', cursive;
+    color: var(--maroon);
+    font-size: 52px;
+    line-height:1.15;
+    margin: 6px 0 10px;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.12);
+  }
+
+  .subline{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--ink-soft);
+    font-size: 20px;
+    margin: 0 0 26px;
+  }
+
+  .countdown{
+    display:flex; gap:10px; justify-content:center;
+    margin: 6px 0 28px; flex-wrap: wrap;
+  }
+  .cd-box{
+    background: var(--navy);
+    border-radius: 4px;
+    padding: 12px 6px;
+    min-width: 66px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.25);
+    transform: rotate(-1.2deg);
+  }
+  .cd-box:nth-child(2){ transform: rotate(0.8deg); background: var(--maroon); }
+  .cd-box:nth-child(3){ transform: rotate(-0.6deg); background: var(--lime-deep); }
+  .cd-box:nth-child(4){ transform: rotate(1deg); background: var(--navy); }
+  .cd-num{
+    font-family:'Permanent Marker', cursive;
+    font-size: 26px;
+    color: var(--paper);
+    display:block;
+    font-variant-numeric: tabular-nums;
+  }
+  .cd-box:nth-child(3) .cd-num{ color: var(--ink); }
+  .cd-label{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size: 13px;
+    letter-spacing: 0.5px;
+    color: var(--paper);
+    opacity:0.9;
+  }
+  .cd-box:nth-child(3) .cd-label{ color: var(--ink); }
+
+  .countdown-done{
+    font-family:'Permanent Marker', cursive;
+    color: var(--maroon);
+    font-size: 25px;
+    margin: 8px 0 28px;
+    display:none;
+  }
+
+  /* ---------- Song player (Strudel) ---------- */
+  .player{
+    background: var(--navy);
+    border-radius: 10px;
+    padding: 14px 16px;
+    margin: 4px 0 6px;
+    display:flex;
+    align-items:center;
+    gap: 14px;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+    text-align:left;
+    transform: rotate(0.4deg);
+  }
+  .player-btn{
+    border:none;
+    background: var(--lime);
+    color: var(--navy);
+    width:48px; height:48px;
+    border-radius:50%;
+    cursor:pointer;
+    display:flex; align-items:center; justify-content:center;
+    box-shadow: 0 6px 14px rgba(0,0,0,0.3);
+    transition: transform 0.2s ease;
+    flex-shrink:0;
+  }
+  .player-btn:hover{ transform: scale(1.06); }
+  .player-btn:active{ transform: scale(0.94); }
+  .player-btn svg{ width:20px; height:20px; }
+
+  .player-info{ flex:1; min-width:0; }
+  .player-title{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--paper);
+    font-size: 20px;
+    line-height:1.1;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .player-artist{
+    font-family:'Patrick Hand', cursive;
+    color: var(--lime);
+    font-size: 13px;
+  }
+  .player-artist a{ color: var(--lime); text-decoration: underline; }
+
+  .player-bars{
+    display:flex; align-items:flex-end; gap:3px; height:22px; flex-shrink:0;
+  }
+  .player-bars span{
+    width:4px; border-radius:2px; background: var(--lime); height:6px;
+  }
+  .player-bars.playing span{ animation: bar 0.9s ease-in-out infinite; }
+  .player-bars span:nth-child(1){ animation-delay: 0s; }
+  .player-bars span:nth-child(2){ animation-delay: 0.15s; }
+  .player-bars span:nth-child(3){ animation-delay: 0.3s; }
+  .player-bars span:nth-child(4){ animation-delay: 0.45s; }
+  @keyframes bar{ 0%,100%{ height:6px; } 50%{ height:22px; } }
+
+  .player-status{
+    font-family:'Caveat', cursive;
+    font-weight:600;
+    font-size: 13px;
+    color: var(--ink-soft);
+    margin: 6px 0 22px;
+    opacity:0.85;
+  }
+
+  .next-btn{
+    font-family:'Permanent Marker', cursive;
+    font-size: 16px;
+    background: var(--maroon);
+    color: var(--paper);
+    border:none;
+    padding: 13px 32px;
+    border-radius: 30px;
+    cursor:pointer;
+    box-shadow: 0 8px 18px rgba(110,27,34,0.4);
+    transition: transform 0.2s ease, box-shadow 0.2s ease, background 0.2s ease;
+  }
+  .next-btn:hover{ transform: translateY(-2px); box-shadow: 0 12px 22px rgba(110,27,34,0.45); background: var(--maroon-deep); }
+
+  /* ---------- SCENE 2 ---------- */
+  .scene2-wrap{
+    max-width: 660px; width:100%;
+    position:relative;
+    padding-top: 6px;
+    z-index: 4; /* above the floating cookie layer */
+  }
+
+  .scene2-title{
+    text-align:center;
+    font-family:'Permanent Marker', cursive;
+    color: var(--maroon);
+    font-size: 36px;
+    margin: 0 0 26px;
+    opacity:0;
+    text-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+  }
+  .scene2-title.show{ animation: fadeUp 0.8s ease forwards; }
+
+  .polaroid{
+    width: 210px;
+    background: #fff;
+    padding: 14px 14px 42px;
+    margin: 0 auto 8px;
+    box-shadow: 0 18px 32px rgba(30,18,10,0.4);
+    position:relative;
+    opacity:0;
+    transform: rotate(-4deg) translateY(16px);
+  }
+  .polaroid.show{ animation: polaroidIn 1s cubic-bezier(.2,.8,.2,1) forwards; }
+  @keyframes polaroidIn{
+    0%{ opacity:0; transform: rotate(-4deg) translateY(16px); }
+    100%{ opacity:1; transform: rotate(-3deg) translateY(0); }
+  }
+  .polaroid img{
+    width:100%; height: 210px; object-fit: cover; display:block;
+    background: var(--cream-deep);
+  }
+  .polaroid-cap{
+    position:absolute; bottom: 11px; left:0; right:0;
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size: 20px;
+    color: var(--ink-soft);
+  }
+  .polaroid .tape{ width:66px; height:26px; top:-12px; left: calc(50% - 33px); transform: rotate(-3deg); }
+
+  .letter-box{
+    background: var(--paper);
+    background-image: repeating-linear-gradient(180deg, transparent 0 27px, var(--paper-line) 27px 28px);
+    border-radius: 2px;
+    padding: 36px 32px 32px;
+    margin-top: 30px;
+    position: relative;
+    box-shadow: 0 20px 40px var(--shadow), 0 0 0 5px var(--paper), 0 0 0 6px var(--navy);
+    opacity:0;
+    transform: translateY(18px) rotate(0.3deg);
+  }
+  .letter-box.show{ animation: fadeUp 0.9s ease forwards; animation-delay: 0.3s; }
+  @keyframes fadeUp{ to{ opacity:1; transform: translateY(0) rotate(0.3deg); } }
+
+  .letter-box .tape.tl{ top:-18px; left: 22px; transform: rotate(-10deg); }
+  .letter-box .tape.tr{ top:-18px; right: 22px; transform: rotate(10deg); }
+  .letter-box .pin{ top: -9px; left: 50%; margin-left:-9px; }
+
+  .letter-greeting{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--maroon);
+    font-size: 28px;
+    margin: 10px 0 16px;
+  }
+
+  .letter-body{
+    font-family:'Patrick Hand', cursive;
+    font-size: 18px;
+    line-height: 1.85;
+    color: var(--ink);
+    white-space: pre-wrap;
+  }
+
+  .letter-signoff{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--maroon-deep);
+    font-size: 24px;
+    margin-top: 20px;
+    text-align:right;
+  }
+
+  .cookie-trigger-line{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    color: var(--navy);
+    text-align:center;
+    margin-top: 24px;
+    font-size: 19px;
+  }
+
+  .cookie-counter{
+    text-align:center;
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size: 14px;
+    color: var(--ink-soft);
+    margin-top: 28px;
+    opacity: 0.85;
+  }
+
+  /* ---------- Floating fortune cookies — roam the FULL screen but sit BEHIND content ---------- */
+  .cookie-zone{
+    position: fixed;
+    inset: 0;
+    z-index: 2; /* behind .scene2-wrap (z-index 4), above body decor (z-index 1) */
+    pointer-events:none;
+  }
+  .cookie{
+    position:absolute;
+    width: 62px; height: 62px;
+    cursor:pointer;
+    pointer-events:auto;
+    filter: drop-shadow(0 8px 10px rgba(30,18,10,0.35));
+    transition: filter 0.2s ease;
+    will-change: transform, left, top;
+  }
+  .cookie:hover{ filter: drop-shadow(0 10px 14px rgba(30,18,10,0.45)) brightness(1.06); }
+  .cookie svg{ width:100%; height:100%; display:block; }
+  .cookie.cracked .whole{ display:none; }
+  .cookie .halves{ display:none; }
+  .cookie.cracked .halves{ display:block; }
+
+  /* ---------- Fortune popup ---------- */
+  .cookie-pop{
+    position:fixed; left:50%; top:50%;
+    transform: translate(-50%,-50%) scale(0.85) rotate(-1deg);
+    background: var(--paper);
+    background-image: repeating-linear-gradient(180deg, transparent 0 26px, var(--paper-line) 26px 27px);
+    border-radius: 4px;
+    padding: 32px 30px 26px;
+    max-width: 320px; width: 86%;
+    text-align:center;
+    box-shadow: 0 28px 64px rgba(0,0,0,0.45), 0 0 0 5px var(--paper), 0 0 0 6px var(--lime-deep);
+    z-index: 50;
+    opacity:0; pointer-events:none;
+    transition: opacity 0.25s ease, transform 0.25s ease;
+  }
+  .cookie-pop.show{ opacity:1; transform: translate(-50%,-50%) scale(1) rotate(-1deg); pointer-events:auto; }
+  .cookie-pop .strip{
+    font-family:'Caveat', cursive;
+    font-weight:700;
+    font-size: 25px;
+    color: var(--maroon-deep);
+    line-height:1.4;
+    margin-bottom: 18px;
+  }
+  .cookie-pop button{
+    font-family:'Permanent Marker', cursive;
+    font-size: 13px;
+    background: var(--navy);
+    color: var(--paper);
+    border:none;
+    padding: 9px 22px;
+    border-radius: 22px;
+    cursor:pointer;
+  }
+  .cookie-overlay{
+    position:fixed; inset:0;
+    background: rgba(30,18,10,0.45);
+    z-index: 49;
+    opacity:0; pointer-events:none;
+    transition: opacity 0.25s ease;
+  }
+  .cookie-overlay.show{ opacity:1; pointer-events:auto; }
+
+  @media (max-width: 480px){
+    .headline{ font-size: 38px; }
+    .cd-box{ min-width: 56px; padding: 10px 4px; }
+    .cd-num{ font-size: 21px; }
+    .card1{ padding: 34px 22px 30px; }
+    .letter-box{ padding: 28px 18px 24px; }
+    .cookie{ width: 50px; height:50px; }
+    .player-title{ font-size: 17px; }
+  }
+
+  @media (prefers-reduced-motion: reduce){
+    *{ animation-duration: 0.01ms !important; animation-iteration-count: 1 !important; transition-duration: 0.01ms !important; }
+  }
+</style>
+</head>
+<body>
+
+<!-- big decorative stars scattered across the whole page, echoing the reference mood board -->
+<svg class="deco-star" style="top:6%; left:6%; width:46px; opacity:0.55;" viewBox="0 0 24 24" fill="var(--lime)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+<svg class="deco-star" style="top:14%; right:8%; width:34px; opacity:0.5;" viewBox="0 0 24 24" fill="var(--navy)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+<svg class="deco-star" style="bottom:10%; left:10%; width:38px; opacity:0.5;" viewBox="0 0 24 24" fill="var(--maroon)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+<svg class="deco-star" style="bottom:6%; right:6%; width:50px; opacity:0.5;" viewBox="0 0 24 24" fill="var(--lime)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+<svg class="deco-star" style="top:46%; left:3%; width:28px; opacity:0.4;" viewBox="0 0 24 24" fill="var(--navy)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+<svg class="deco-star" style="top:55%; right:4%; width:32px; opacity:0.4;" viewBox="0 0 24 24" fill="var(--maroon)"><path d="M12 1l2.9 7.6L23 11l-7.1 3.2L13.5 22 12 14.8 4.9 17.5 8.8 11 1 8.6l8.1-1L12 1z"/></svg>
+
+<!-- ================= SCENE 1 ================= -->
+<section class="scene active" id="scene1">
+  <div class="card1">
+    <div class="tape washi-lime tl"></div>
+    <div class="tape washi-maroon tr"></div>
+    <div class="pin p1"></div>
+
+    <p class="eyebrow">menghitung hari ke...</p>
+    <h1 class="headline">Happy Birthday!</h1>
+    <p class="subline">sebentar lagi harimu tiba ✨</p>
+
+    <div class="countdown" id="countdown">
+      <div class="cd-box"><span class="cd-num" id="cd-days">00</span><span class="cd-label">hari</span></div>
+      <div class="cd-box"><span class="cd-num" id="cd-hours">00</span><span class="cd-label">jam</span></div>
+      <div class="cd-box"><span class="cd-num" id="cd-mins">00</span><span class="cd-label">menit</span></div>
+      <div class="cd-box"><span class="cd-num" id="cd-secs">00</span><span class="cd-label">detik</span></div>
+    </div>
+    <p class="countdown-done" id="countdown-done">Hari ini harinya! 🎉</p>
+
+    <div class="player">
+      <button class="player-btn" id="musicBtn" aria-label="Putar musik">
+        <svg id="iconPlay" viewBox="0 0 24 24" fill="none"><path d="M7 5v14l12-7L7 5z" fill="currentColor"/></svg>
+        <svg id="iconPause" viewBox="0 0 24 24" fill="none" style="display:none;"><rect x="6" y="5" width="4" height="14" rx="1" fill="currentColor"/><rect x="14" y="5" width="4" height="14" rx="1" fill="currentColor"/></svg>
+        <svg id="iconLoading" viewBox="0 0 24 24" fill="none" style="display:none;"><circle cx="12" cy="12" r="8" stroke="currentColor" stroke-width="2.5" stroke-dasharray="32" stroke-linecap="round"><animateTransform attributeName="transform" type="rotate" from="0 12 12" to="360 12 12" dur="0.8s" repeatCount="indefinite"/></circle></svg>
+      </button>
+      <div class="player-info">
+        <div class="player-title">Happy Birthday</div>
+        <div class="player-artist">by <a href="https://github.com/terryds" target="_blank" rel="noopener">terryds</a> on Strudel</div>
+      </div>
+      <div class="player-bars" id="musicBars">
+        <span></span><span></span><span></span><span></span>
+      </div>
+    </div>
+    <p class="player-status" id="playerStatus">memuat instrumen...</p>
+
+    <button class="next-btn" id="nextBtn">Lanjut &nbsp;→</button>
+  </div>
+</section>
+
+<!-- ================= SCENE 2 ================= -->
+<section class="scene" id="scene2">
+  <div class="cookie-zone" id="cookieZone"></div>
+
+  <div class="scene2-wrap" id="scene2wrap">
+    <h2 class="scene2-title" id="scene2title">untuk kamu, hari ini</h2>
+
+    <div class="polaroid" id="polaroid">
+      <div class="tape washi-navy"></div>
+      <img src="https://placehold.co/400x400/E8D2A0/6E1B22?text=%F0%9F%93%B8" alt="Foto kenangan" id="polaroidImg">
+      <div class="polaroid-cap">ganti foto ini ya~</div>
+    </div>
+
+    <div class="letter-box" id="letterBox">
+      <div class="tape washi-lime tl"></div>
+      <div class="tape washi-maroon tr"></div>
+      <div class="pin"></div>
+
+      <p class="letter-greeting">Halo, semoga harimu indah 🤍</p>
+      <div class="letter-body" id="letterBody">Tulis ucapan ulang tahunmu di sini ya — cari kata "EDIT_ME" di dalam file HTML untuk menggantinya, atau minta Claude mengisinya sesuai cerita kalian.
+
+Bagian ini sengaja dibuat panjang dan lega supaya kamu bisa cerita tentang kenangan, harapan, dan hal-hal kecil yang bikin orang ini spesial buatmu.</div>
+      <p class="letter-signoff">— dengan sayang</p>
+
+      <p class="cookie-trigger-line">Catch the fortune cookie and find out! 🥠</p>
+    </div>
+
+    <p class="cookie-counter" id="cookieCounter">0 dari 6 fortune cookie ditemukan</p>
+  </div>
+</section>
+
+<div class="cookie-overlay" id="cookieOverlay"></div>
+<div class="cookie-pop" id="cookiePop">
+  <p class="strip" id="cookieStrip"></p>
+  <button id="cookieCloseBtn">tutup</button>
+</div>
+
+<script>
+/* ============ CONFIG — EDIT_ME ============ */
+const TARGET_DATE_WIB = "2026-07-03T00:00:00+07:00"; // target ulang tahun, WIB
+const FORTUNE_QUOTES = [
+  "You are precious, exactly as you are.",
+  "Hal baik sedang menujumu, pelan tapi pasti.",
+  "Senyummu adalah alasan hari ini jadi lebih cerah.",
+  "Kamu lebih kuat dari yang kamu kira.",
+  "Dunia jadi lebih hangat karena ada kamu di dalamnya.",
+  "Kamu pantas mendapat semua hal baik yang kamu doakan."
+];
+/* ============================================ */
+
+/* ---------- Countdown (WIB-accurate via fixed UTC+7 offset) ---------- */
+function updateCountdown(){
+  const target = new Date(TARGET_DATE_WIB).getTime();
+  const diff = target - Date.now();
+
+  const elD = document.getElementById('cd-days');
+  const elH = document.getElementById('cd-hours');
+  const elM = document.getElementById('cd-mins');
+  const elS = document.getElementById('cd-secs');
+  const doneEl = document.getElementById('countdown-done');
+  const cdEl = document.getElementById('countdown');
+
+  if(diff <= 0){
+    cdEl.style.display = 'none';
+    doneEl.style.display = 'block';
+    return;
+  }
+  elD.textContent = String(Math.floor(diff / 86400000)).padStart(2,'0');
+  elH.textContent = String(Math.floor((diff / 3600000) % 24)).padStart(2,'0');
+  elM.textContent = String(Math.floor((diff / 60000) % 60)).padStart(2,'0');
+  elS.textContent = String(Math.floor((diff / 1000) % 60)).padStart(2,'0');
+}
+updateCountdown();
+setInterval(updateCountdown, 1000);
+
+/* ---------- Strudel song player ---------- */
+let strudelReady = false;
+let strudelPlaying = false;
+let pattern = null;
+
+const playBtn   = document.getElementById('musicBtn');
+const iconPlay  = document.getElementById('iconPlay');
+const iconPause = document.getElementById('iconPause');
+const iconLoad  = document.getElementById('iconLoading');
+const bars      = document.getElementById('musicBars');
+const statusEl  = document.getElementById('playerStatus');
+
+function setStatus(text){ statusEl.textContent = text; }
+function setIcon(state){ // 'play' | 'pause' | 'loading'
+  iconPlay.style.display  = state === 'play'    ? 'block' : 'none';
+  iconPause.style.display = state === 'pause'   ? 'block' : 'none';
+  iconLoad.style.display  = state === 'loading' ? 'block' : 'none';
+}
+
+async function initAudio(){
+  setIcon('loading');
+  setStatus('memuat instrumen...');
+  try{
+    await initStrudel({ prebake: () => samples('github:tidalcycles/dirt-samples') });
+    setDefaultVoicings('legacy');
+
+    const chrds = "F@3 C@6 F@6 Bb@3 F@2 C F@3".slow(8);
+    pattern = stack(
+      "[C4@3 C4] D4 C4 F4 E4@2 [C4@3 C4] D4 C4 G4 F4@2 [C4@3 C4] C5 A4 F4 E4 D4 [Bb4@3 Bb4] A4 F4 G4 F4@2".slow(8).early(1/3).note().s("gm_harmonica").gain(0.4).color('green'),
+      chord(chrds).anchor("G4").struct("x*3").voicing().piano().gain(0.2).color('yellow'),
+      n("2 ~ ~ 2 1 ~").chord(chrds).anchor(chrds.rootNotes(2)).voicing().s("gm_electric_bass_finger").lpf(190).gain(1).color('blue'),
+      s("hh*3, <bd ~>, ~ ~ rim").bank("KorgDDM110").gain(0.2)
+    ).cpm(120/4).room(0.3);
+
+    strudelReady = true;
+    setStatus('klik untuk nyalain lagunya 🎵');
+    setIcon('play');
+    return true;
+  } catch(err){
+    console.error('Strudel init failed:', err);
+    setStatus('musik gagal dimuat — cek koneksi internet');
+    setIcon('play');
+    return false;
+  }
+}
+
+async function playMusic(){
+  if(!strudelReady){
+    const ok = await initAudio();
+    if(!ok) return;
+  }
+  pattern.play();
+  strudelPlaying = true;
+  setIcon('pause');
+  bars.classList.add('playing');
+  setStatus('sedang main "Happy Birthday" 🎶');
+}
+
+function pauseMusic(){
+  hush();
+  strudelPlaying = false;
+  setIcon('play');
+  bars.classList.remove('playing');
+  setStatus('dijeda — klik buat lanjut');
+}
+
+playBtn.addEventListener('click', ()=>{
+  if(strudelPlaying) pauseMusic();
+  else playMusic();
+});
+
+// Try to autoplay as soon as the page is interactive.
+// Browsers block audio without a user gesture, so we also bind a
+// one-time fallback: the first click/tap/key anywhere on the page starts it.
+window.addEventListener('DOMContentLoaded', ()=>{
+  playMusic().catch(()=>{});
+});
+function autoplayFallback(){
+  if(!strudelPlaying) playMusic();
+  window.removeEventListener('pointerdown', autoplayFallback);
+  window.removeEventListener('keydown', autoplayFallback);
+}
+window.addEventListener('pointerdown', autoplayFallback, { once:true });
+window.addEventListener('keydown', autoplayFallback, { once:true });
+
+/* ---------- Scene transition ---------- */
+document.getElementById('nextBtn').addEventListener('click', ()=>{
+  document.getElementById('scene1').classList.remove('active');
+  document.getElementById('scene2').classList.add('active');
+
+  requestAnimationFrame(()=>{
+    document.getElementById('scene2title').classList.add('show');
+    setTimeout(()=> document.getElementById('polaroid').classList.add('show'), 200);
+    setTimeout(()=> document.getElementById('letterBox').classList.add('show'), 500);
+    setTimeout(()=> spawnCookies(), 900);
+  });
+});
+
+/* ---------- Fortune cookies — roam the FULL screen, but z-index keeps them
+   behind .scene2-wrap, so they slide past the letter without ever blocking
+   clicks or reading. They peek out around the edges of the content. ---------- */
+let cookiesFound = 0;
+let cookieEls = [];
+const TOTAL_COOKIES = 6;
+
+function spawnCookies(){
+  const zone = document.getElementById('cookieZone');
+  zone.innerHTML = '';
+  cookieEls = [];
+
+  for(let i=0;i<TOTAL_COOKIES;i++){
+    const c = document.createElement('div');
+    c.className = 'cookie';
+    c.innerHTML = `
+      <svg viewBox="0 0 64 64" class="whole">
+        <path d="M4 30c0-14 26-26 28-26s28 12 28 26c0 4-26 16-28 16S4 34 4 30z" fill="#D9A24B" stroke="#9C6E2C" stroke-width="1.5"/>
+        <path d="M10 28c4-8 16-16 22-16s18 8 22 16" fill="none" stroke="#B8893F" stroke-width="2" opacity="0.5"/>
+      </svg>
+      <svg viewBox="0 0 64 64" class="halves">
+        <path d="M2 34c2-10 18-20 20-20s10 8 12 14c-8 4-22 8-32 6z" fill="#D9A24B" stroke="#9C6E2C" stroke-width="1.5"/>
+        <path d="M62 34c-2-10-18-20-20-20s-10 8-12 14c8 4 22 8 32 6z" fill="#E0AC5A" stroke="#9C6E2C" stroke-width="1.5"/>
+      </svg>
+    `;
+    const x = 5 + Math.random()*85;
+    const y = 5 + Math.random()*85;
+    c.style.left = x + '%';
+    c.style.top = y + 'vh';
+    c.dataset.found = "0";
+
+    zone.appendChild(c);
+    cookieEls.push(c);
+    animateCookieFloat(c);
+
+    c.addEventListener('click', ()=> crackCookie(c));
+  }
+}
+
+function animateCookieFloat(el){
+  function nextMove(){
+    const dur = 4500 + Math.random()*4500;
+    const newX = 3 + Math.random()*88;
+    const newY = 3 + Math.random()*88;
+    el.style.transition = `left ${dur}ms ease-in-out, top ${dur}ms ease-in-out, transform ${dur/2}ms ease-in-out`;
+    el.style.left = newX + '%';
+    el.style.top = newY + 'vh';
+    const rot = (Math.random()*30-15).toFixed(1);
+    el.style.transform = `rotate(${rot}deg)`;
+    el._floatTimer = setTimeout(nextMove, dur);
+  }
+  nextMove();
+}
+
+function crackCookie(el){
+  if(el.dataset.found === "1"){
+    showFortune(el._quote);
+    return;
+  }
+  el.dataset.found = "1";
+  el.classList.add('cracked');
+  clearTimeout(el._floatTimer);
+  el.style.transition = 'transform 0.4s ease';
+  el.style.transform += ' scale(1.15)';
+
+  const quote = FORTUNE_QUOTES[cookiesFound % FORTUNE_QUOTES.length];
+  el._quote = quote;
+  cookiesFound++;
+  document.getElementById('cookieCounter').textContent = `${cookiesFound} dari ${TOTAL_COOKIES} fortune cookie ditemukan`;
+
+  showFortune(quote);
+}
+
+function showFortune(text){
+  document.getElementById('cookieStrip').textContent = text;
+  document.getElementById('cookiePop').classList.add('show');
+  document.getElementById('cookieOverlay').classList.add('show');
+}
+function closeFortune(){
+  document.getElementById('cookiePop').classList.remove('show');
+  document.getElementById('cookieOverlay').classList.remove('show');
+}
+document.getElementById('cookieCloseBtn').addEventListener('click', closeFortune);
+document.getElementById('cookieOverlay').addEventListener('click', closeFortune);
+</script>
+
+</body>
+</html>
