@@ -45,7 +45,7 @@
   .canvas-inner{
     position:absolute;
     inset:0;
-    background-image:url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBgUFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0QGBgYGBg[...]
+    background-image:url('data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAQDAwMDAgQDAwMEBAQFBgoGBgUFBgwICQcKDgwPDg4MDQ0PERYTDxAVEQ0NExoTFRcYGRkZDxIbHRsYHRYYGRj/2wBDAQQEBAYFBgsGBgsYEA0QGBg[...]
     background-size:100% 100%;
     background-repeat:no-repeat;
   }
@@ -122,24 +122,24 @@
       <div class="canvas-inner" id="canvasInner">
 
         <!-- Draggable items: left/top/width as % of 1920x1080 reference -->
-        <!-- TINCASE (baki besar) - kiri bawah, z-index tinggi untuk interaksi -->
+        <!-- TINCASE (baki besar) - kiri bawah, clickable & draggable -->
         <div class="item click-photo" data-name="tincase" style="left:7.81%; top:56.48%; width:17.19%; z-index:100;">
           <img src="data:image/webp;base64,UklGRi7zAABXRUJQVlA4WAoAAAAQAAAAgwMAqwIAQUxQSGklAAAN76G4bRsHSa6tcfvP14vyvREiIqscTI7bFuw+AQnb/wGnwFJt0bZHGLlt4wh2sMG0/f+Dp4+3XCP6PwE4uaB9Nc/wVp/NGbudK6aXmBncL[...]
         </div>
 
-        <!-- SUSAN - kanan bawah, adjusted position untuk tidak terlalu extreme kanan -->
-        <div class="click-photo" data-name="susan" style="left:58.33%; top:48.15%; width:28.65%; z-index:80;">
+        <!-- SUSAN - kanan bawah, clickable & draggable -->
+        <div class="item click-photo" data-name="susan" style="left:58.33%; top:48.15%; width:28.65%; z-index:80;">
           <img src="data:image/webp;base64,UklGRlxrAABXRUJQVlA4WAoAAAAQAAAAgwMAcQIAQUxQSAQEAAANFLVt2zD2/4+3JFuAiJgArM1XHPqii/qtbVu1bdu2UiqLGbUdtrj1bc12cKvbEzJhq8xMoyShtjGXAXVDREwAUCD+/qOIyGFAGWQYRETkl[...]
         </div>
 
-        <!-- SNOOPY - tengah atas, clickable dengan behavior seperti tincase -->
+        <!-- SNOOPY - tengah atas, clickable & draggable -->
         <div class="item click-photo" data-name="snoopy" style="left:42.19%; top:8.33%; width:15.63%; z-index:85;">
           <img src="data:image/webp;base64,UklGRgoCAABXRUJQVlA4WAoAAAAQAAAAeAIAeAEAQUxQSBoEAAAB/wckSPD/eGtEpO4TkCRJjtuwhxzMwsb/H4wBuJgKXyP6PwHbG3Fv75jLy5/D7bSjOo5PwTrJJZjZ0NpxHHLcgemb8HgzI1tr7TjkKu58A[...]
         </div>
 
         <!-- MOBIL HOTWHEELS - kiri atas -->
         <div class="item" data-name="mobil hotwheels" style="left:10.16%; top:18.06%; width:15.89%; z-index:10;">
-          <img src="data:image/webp;base64,UklGRtoPAQBXRUJQVlA4WAoAAAAQAAAAgwMARwIAQUxQSJ+fAAAB/yckSPD/eGtEpO4TkCRJjtuwhxzMwsb/H4wBuJgKXyP6PwHbG3Fv75jLy5/D7bSjOo5PwTrJJZjZ0NpxHHLcgemb8HgzI1tr7TjkKu58A[...]
+          <img src="data:image/webp;base64,UklGRtoPAQBXRUJQVlA4WAoAAAAQAAAAgwMARwIAQUxQSJ+fAAAB/yckSPD/eGtEpO4TkCRJjtuwhxzMwsb/H4wBuJgKXyP6PwHbG3Fv75jLy5/D7bSjOo5PwTrJJZjZ0NpxHHLcgemb8HgzI1tr7Tjk[...]
         </div>
 
         <!-- BUNGA - tengah atas kanan -->
@@ -243,7 +243,7 @@
     document.removeEventListener('touchend', stopDrag);
   }
 
-  // ===== CLICKABLE PHOTOS (tincase & snoopy) =====
+  // ===== CLICKABLE PHOTOS (tincase, snoopy, susan) =====
   const clickPhotos = document.querySelectorAll('.click-photo');
   clickPhotos.forEach(photo => {
     photo.addEventListener('click', handlePhotoClick);
